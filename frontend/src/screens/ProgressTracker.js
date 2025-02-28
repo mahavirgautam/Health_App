@@ -14,7 +14,6 @@ const ProgressTracker = () => {
     fetchProgress();
   }, []);
 
-  // ✅ Fetch Progress from API
   const fetchProgress = async () => {
     try {
       const token = await AsyncStorage.getItem("authToken");

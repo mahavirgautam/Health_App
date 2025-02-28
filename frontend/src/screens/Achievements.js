@@ -85,7 +85,7 @@ const AchievementsWall = () => {
               <Button title="📢 Post to Group" onPress={() => postToGroup(item.title)} disabled={posting} />
             </View>
           )}
-          contentContainerStyle={styles.scrollContainer} // ✅ Instead of ScrollView
+          contentContainerStyle={styles.scrollContainer} 
         />
       )}
     </View>

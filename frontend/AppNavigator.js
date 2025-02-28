@@ -39,22 +39,22 @@ export default function AppNavigator() {
           options={{title:"Edit Profile",headerBackTitle:"Back to Profile"}} 
         />
 
-        <Stack.Screen name="SleepTracker" component={SleepTracker} options={{ title: "Sleep Tracker" }} />
-        <Stack.Screen name="Achievements" component={AchievementsWall} options={{ title: "Achievements" }} />
+        <Stack.Screen name="SleepTracker" component={SleepTracker} options={{ title:"Sleep Tracker" }} />
+        <Stack.Screen name="Achievements" component={AchievementsWall} options={{ title:"Achievements" }} />
 
 
-        <Stack.Screen name="JoinGroup" component={JoinGroup} options={{ title: "Join a Group" }} />
-        <Stack.Screen name="PostAchievement" component={PostAchievement} options={{ title: "Post an Achievement" }} />
-        <Stack.Screen name="GroupPosts" component={GroupPosts} options={{ title: "Group Posts" }} />
+        <Stack.Screen name="JoinGroup" component={JoinGroup} options={{ title:"Join a Group" }} />
+        <Stack.Screen name="PostAchievement" component={PostAchievement} options={{ title:"Post an Achievement" }} />
+        <Stack.Screen name="GroupPosts" component={GroupPosts} options={{ title:"Group Posts" }} />
 
-        <Stack.Screen name="MealTracker" component={MealTracker} options={{ title: "Meal Tracker" }} />
-        <Stack.Screen name="MealSummary" component={MealSummary} options={{ title: "Meal Summary" }} />
+        <Stack.Screen name="MealTracker" component={MealTracker} options={{ title:"Meal Tracker" }} />
+        <Stack.Screen name="MealSummary" component={MealSummary} options={{ title:"Meal Summary" }} />
 
-        <Stack.Screen name="FitnessAssessment" component={FitnessAssessment} options={{ title: "Fitness Assessment" }} />
-        <Stack.Screen name="WorkoutPlan" component={WorkoutPlan} options={{ title: "Workout Plan" }} />
-        <Stack.Screen name="ProgressTracker" component={ProgressTracker} options={{ title: "Progress Tracker" }} />
+        <Stack.Screen name="FitnessAssessment" component={FitnessAssessment} options={{ title:"Fitness Assessment" }} />
+        <Stack.Screen name="WorkoutPlan" component={WorkoutPlan} options={{ title:"Workout Plan" }} />
+        <Stack.Screen name="ProgressTracker" component={ProgressTracker} options={{ title:"Progress Tracker" }} />
 
-        <Stack.Screen name="SoothingMusic" component={SoothingMusic} options={{ title: "Soothing Music" }} />
+        <Stack.Screen name="SoothingMusic" component={SoothingMusic} options={{ title:"Soothing Music" }} />
 
       </Stack.Navigator>
     </NavigationContainer>

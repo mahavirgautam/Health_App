@@ -9,8 +9,8 @@ load_dotenv()
 # Connect to MongoDB
 MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
-#db = client["HealthFitnessApp"]
-db = client["FitFolk"]
+db = client["HealthFitnessApp"]
+#db = client["FitFolk"]
 
 # Create test user
 hashed_password = bcrypt.hashpw("test123".encode('utf-8'), bcrypt.gensalt())

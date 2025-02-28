@@ -8,8 +8,8 @@ print("MONGO_URI:", os.getenv("MONGO_URI"))
 print("JWT_SECRET_KEY:", os.getenv("JWT_SECRET_KEY"))
 
 client = MongoClient(os.getenv("MONGO_URI"))
-#db = client["HealthFitnessDB"]
-db = client["FitFolkDB"]
+db = client["HealthFitnessDB"]
+#db = client["FitFolkDB"]
 
 users_collection = db["users"]
 sleep_collection = db["sleep"]

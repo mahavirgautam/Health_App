@@ -18,8 +18,8 @@ CORS(app)
 
 MONGO_URI=os.getenv("MONGO_URI")
 client=MongoClient(MONGO_URI)
-# db = client.HealthFitnessApp
-db=client.FitFolk
+db = client.HealthFitnessApp
+#db=client.FitFolk
 users_collection=db.users
 sleep_collection=db.sleep
 achievements_collection=db.achievements

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Button, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useNavigation } from "@react-navigation/native"; // ✅ Import Navigation Hook
+import { useNavigation } from "@react-navigation/native"; 
 import axios from "axios";
 
 const SleepTracker = () => {
@@ -21,7 +21,7 @@ const SleepTracker = () => {
       const lastActiveTime = new Date(parseInt(lastActive));
       const currentTime = new Date();
 
-      const inactiveDuration = (currentTime - lastActiveTime) / 1000 / 60 / 60; // Convert ms to hours
+      const inactiveDuration = (currentTime - lastActiveTime) / 1000 / 60 / 60; 
 
       if (inactiveDuration >= 5) {
         console.log(`😴 Sleep detected: ${inactiveDuration.toFixed(2)} hours`);
