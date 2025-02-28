@@ -1,5 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from "react-native";
+import React,{useState,useEffect} from "react";
+import { 
+  View, 
+  Text, 
+  FlatList, 
+  StyleSheet, 
+  ActivityIndicator, 
+  Button, 
+  Alert, 
+  AppState 
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AchievementsWall = () => {
@@ -8,6 +17,14 @@ const AchievementsWall = () => {
 
   useEffect(() => {
     fetchAchievements();
+
+    const subscription = AppState.addEventListener("change", nextAppState => {
+      console.log("App State changed:", nextAppState);
+    });
+
+    return () => {
+      subscription.remove(); 
+    };
   }, []);
 
   const fetchAchievements = async () => {
@@ -33,6 +50,17 @@ const AchievementsWall = () => {
     }
   };
 
+  const clearAchievements = async () => {
+    try {
+      await AsyncStorage.removeItem("achievements"); 
+      setAchievements([]); 
+      Alert.alert("Success", "Achievement logs cleared!");
+    } catch (error) {
+      Alert.alert("Error", "Failed to clear achievements.");
+      console.error("Error clearing achievements:", error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>🏆 Achievements Wall</Text>
@@ -55,6 +83,10 @@ const AchievementsWall = () => {
           contentContainerStyle={styles.scrollContainer}
         />
       )}
+
+      <View style={styles.buttonContainer}>
+        <Button title="Clear Logs" onPress={clearAchievements} color="red" />
+      </View>
     </View>
   );
 };
@@ -77,6 +109,10 @@ const styles = StyleSheet.create({
   title: { fontSize: 18, fontWeight: "bold", color: "#333" },
   description: { fontSize: 16, color: "#555", marginBottom: 5 },
   user: { fontSize: 14, fontStyle: "italic", color: "#777", marginBottom: 10 },
+  buttonContainer: { 
+    marginTop: 20, 
+    alignItems: "center" 
+  },
 });
 
 export default AchievementsWall;

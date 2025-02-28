@@ -25,7 +25,7 @@ const AchievementsWall = () => {
       });
 
       const data = await response.json();
-      console.log("Fetched Achievements:", data); // Debug log
+      console.log("Fetched Achievements:", data); 
       setAchievements(data);
     } catch (error) {
       console.error("Error fetching achievements:", error);
@@ -114,3 +114,4 @@ const styles = StyleSheet.create({
 });
 
 export default AchievementsWall;
+

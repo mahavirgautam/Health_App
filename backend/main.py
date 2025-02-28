@@ -329,6 +329,7 @@ def track_progress():
 
     progress = progress_collection.find_one({"user": user_email}) or {"completed_days": 0}
     completed_days = progress["completed_days"] + 1  # ✅ Increment workout days
+    achievement_days = completed_days
 
     badge = None
     if completed_days == 3:
@@ -349,7 +350,7 @@ def track_progress():
         achievements_collection.insert_one({
             "user": user_email,
             "title": f"🎖 {badge}",
-            "description": f"Congratulations! You've earned the {badge} for completing {completed_days} workout days!",
+            "description": f"Congratulations! You've earned the {badge} for completing {achievement_days} workout days!",
             "likes": 0,
             "comments": []
         })
@@ -374,10 +375,9 @@ def get_progress():
 def reset_progress():
     user_email = get_jwt_identity()
 
-    # ✅ Reset completed days to 0
     progress_collection.update_one(
         {"user": user_email},
-        {"$set": {"completed_days": 0, "badge": None}},  # Reset fitness level too
+        {"$set": {"completed_days": 0, "badge": None}}, 
         upsert=True
     )
 

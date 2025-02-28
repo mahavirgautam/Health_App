@@ -82,7 +82,7 @@ const WorkoutPlan = () => {
       setCompletedDays(response.data.completed_days);
       setBadge(response.data.badge);
 
-      let alertMessage = `Workout day ${response.data.completed_days} marked as completed!`;
+      let alertMessage = `You Have Done it,See You Tomorrow!`;
       if (response.data.badge) {
         alertMessage += `\n🎉 New Badge Earned: ${response.data.badge}`;
       }
@@ -109,7 +109,6 @@ const WorkoutPlan = () => {
         <ActivityIndicator size="small" color="blue" />
       )}
 
-      {/* ✅ Show Workout Plan */}
       {loading ? (
         <ActivityIndicator size="large" color="blue" />
       ) : (
