@@ -84,10 +84,10 @@ const WorkoutPlan = () => {
 
       let alertMessage = `You Have Done it,See You Tomorrow!`;
       if (response.data.badge) {
-        alertMessage += `\n🎉 New Badge Earned: ${response.data.badge}`;
+        alertMessage += `\n🎉 New Badge Earned:${response.data.badge}`;
       }
 
-      Alert.alert("Workout Completed!", alertMessage);
+      Alert.alert("Workout Completed!",alertMessage);
 
       if (response.data.redirect) {
         navigation.navigate("FitnessAssessment");
