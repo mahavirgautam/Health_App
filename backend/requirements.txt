@@ -1,0 +1,10 @@
+Flask
+flask-cors
+flask-jwt-extended
+pymongo
+bcrypt
+python-dotenv
+pandas
+itsdangerous
+gunicorn
+
