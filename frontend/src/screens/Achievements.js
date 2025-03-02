@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, ScrollView, Button, Alert, ActivityIndicator } from "react-native";
+import { View, Text, FlatList, StyleSheet, Button, Alert, ActivityIndicator } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AchievementsWall = () => {
@@ -19,13 +19,13 @@ const AchievementsWall = () => {
         return;
       }
 
-      const response = await fetch("https://fitfolk-33796.el.r.appspot.com/api/get-achievements", {
+      const response = await fetch("https://flask-s8i3.onrender.com/api/get-achievements", {
         method: "GET",
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await response.json();
-      console.log("Fetched Achievements:", data); 
+      console.log("Fetched Achievements:", data);
       setAchievements(data);
     } catch (error) {
       console.error("Error fetching achievements:", error);
@@ -39,7 +39,7 @@ const AchievementsWall = () => {
       setPosting(true);
       const token = await AsyncStorage.getItem("authToken");
 
-      const response = await fetch("https://fitfolk-33796.el.r.appspot.com/api/post-badge", {
+      const response = await fetch("https://flask-s8i3.onrender.com/api/post-badge", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -68,11 +68,11 @@ const AchievementsWall = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>🏆 Achievements Wall</Text>
-  
+
       {loading ? (
-        <ActivityIndicator size="large" color="blue" />
+        <ActivityIndicator size="large" color="#FFA500" />
       ) : achievements.length === 0 ? (
-        <Text>No achievements yet. Keep working towards your goals!</Text>
+        <Text style={styles.noAchievements}>No achievements yet. Keep working towards your goals! 💪</Text>
       ) : (
         <FlatList
           data={achievements}
@@ -82,36 +82,44 @@ const AchievementsWall = () => {
               <Text style={styles.title}>{item.title}</Text>
               <Text style={styles.description}>{item.description}</Text>
               <Text style={styles.user}>By: {item.user}</Text>
-              <Button title="📢 Post to Group" onPress={() => postToGroup(item.title)} disabled={posting} />
+              <View style={styles.buttonContainer}>
+                <Button title="📢 Post to Group" onPress={() => postToGroup(item.title)} disabled={posting} color="#FF8C00" />
+              </View>
             </View>
           )}
-          contentContainerStyle={styles.scrollContainer} 
+          contentContainerStyle={styles.scrollContainer}
         />
       )}
     </View>
   );
-  
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  heading: { fontSize: 24, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
+  container: { flex: 1, padding: 20, backgroundColor: "#FFFACD" }, // Light yellow
+  heading: { fontSize: 26, fontWeight: "bold", marginBottom: 20, textAlign: "center", color: "#FF8C00" },
+  noAchievements: { fontSize: 16, textAlign: "center", color: "#555", marginTop: 20 },
   scrollContainer: { flexGrow: 1 },
   achievementCard: {
     padding: 15,
-    backgroundColor: "#f5f5f5",
-    borderRadius: 10,
-    marginBottom: 10,
+    backgroundColor: "#FFF",
+    borderRadius: 12,
+    marginBottom: 12,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 4,
+    borderLeftWidth: 5,
+    borderLeftColor: "#FFA500", // Orange accent
   },
-  title: { fontSize: 18, fontWeight: "bold", color: "#333" },
+  title: { fontSize: 20, fontWeight: "bold", color: "#333" },
   description: { fontSize: 16, color: "#555", marginBottom: 5 },
   user: { fontSize: 14, fontStyle: "italic", color: "#777", marginBottom: 10 },
+  buttonContainer: {
+    marginTop: 10,
+    borderRadius: 8,
+    overflow: "hidden",
+  },
 });
 
 export default AchievementsWall;
-
