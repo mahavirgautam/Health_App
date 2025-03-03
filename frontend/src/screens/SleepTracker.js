@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button, Alert } from "react-native";
+import { 
+  View, Text, TouchableOpacity, Alert, StyleSheet, ActivityIndicator 
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native"; 
 import axios from "axios";
+import { Ionicons } from "@expo/vector-icons";
 
 const SleepTracker = () => {
   const [sleepDetected, setSleepDetected] = useState(false);
   const [sleepHours, setSleepHours] = useState(0);
-  const navigation = useNavigation(); // ✅ Initialize Navigation
+  const [loading, setLoading] = useState(true);
+  const navigation = useNavigation();
 
   useEffect(() => {
     checkSleep();
@@ -16,20 +20,23 @@ const SleepTracker = () => {
   const checkSleep = async () => {
     try {
       const lastActive = await AsyncStorage.getItem("lastActiveTime");
-      if (!lastActive) return;
+      if (!lastActive) {
+        setLoading(false);
+        return;
+      }
 
       const lastActiveTime = new Date(parseInt(lastActive));
       const currentTime = new Date();
-
-      const inactiveDuration = (currentTime - lastActiveTime) / 1000 / 60 / 60; 
+      const inactiveDuration = (currentTime - lastActiveTime) / 1000 / 60 / 60;
 
       if (inactiveDuration >= 5) {
-        console.log(`😴 Sleep detected: ${inactiveDuration.toFixed(2)} hours`);
         setSleepHours(inactiveDuration.toFixed(2));
         setSleepDetected(true);
       }
     } catch (error) {
       console.error("Error detecting sleep:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,7 +54,7 @@ const SleepTracker = () => {
       }
 
       const response = await axios.post(
-        "https://fitfolk-33796.el.r.appspot.com/api/log-sleep",
+        "https://flask-s8i3.onrender.com/api/log-sleep",
         {
           date: new Date().toISOString().split("T")[0],
           sleep_hours: sleepHours,
@@ -63,27 +70,86 @@ const SleepTracker = () => {
   };
 
   return (
-    <View style={{ flex: 1, padding: 20, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 15 }}>📊 AI Sleep Tracker</Text>
+    <View style={styles.container}>
+      <Text style={styles.header}>🌙 AI Sleep Tracker</Text>
 
-      {sleepDetected ? (
-        <Text style={{ fontSize: 18, color: "green", marginBottom: 15 }}>
-          😴 Auto-Detected Sleep: {sleepHours} hours
-        </Text>
+      {loading ? (
+        <ActivityIndicator size="large" color="#4CAF50" />
+      ) : sleepDetected ? (
+        <Text style={styles.sleepText}>😴 Auto-Detected Sleep: {sleepHours} hours</Text>
       ) : (
-        <Text style={{ fontSize: 18, color: "red", marginBottom: 15 }}>🌞 No sleep detected yet.</Text>
+        <Text style={styles.noSleepText}>🌞 No sleep detected yet.</Text>
       )}
 
-      <Button title="Log Sleep to Backend" onPress={logSleepToBackend} />
+      <TouchableOpacity style={styles.logButton} onPress={logSleepToBackend}>
+        <Ionicons name="cloud-upload-outline" size={22} color="#fff" />
+        <Text style={styles.buttonText}> Log Sleep</Text>
+      </TouchableOpacity>
 
-      <View style={{ marginTop: 15 }}>
-        <Button
-          title="YogaNidra for better sleep"
-          onPress={() => navigation.navigate("SoothingMusic")}
-        />
-      </View>
+      <TouchableOpacity 
+        style={styles.yogaButton} 
+        onPress={() => navigation.navigate("SoothingMusic")}
+      >
+        <Ionicons name="musical-notes-outline" size={22} color="#fff" />
+        <Text style={styles.buttonText}> YogaNidra for Better Sleep</Text>
+      </TouchableOpacity>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#E3F2FD",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  header: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 20,
+  },
+  sleepText: {
+    fontSize: 18,
+    color: "#4CAF50",
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  noSleepText: {
+    fontSize: 18,
+    color: "#FF5722",
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  logButton: {
+    flexDirection: "row",
+    backgroundColor: "#4CAF50",
+    padding: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "80%",
+    marginBottom: 15,
+    elevation: 3,
+  },
+  yogaButton: {
+    flexDirection: "row",
+    backgroundColor: "#3F51B5",
+    padding: 12,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "80%",
+    elevation: 3,
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 8,
+  },
+});
 
 export default SleepTracker;
