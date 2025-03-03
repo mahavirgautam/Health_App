@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button, FlatList, Alert, ActivityIndicator } from "react-native";
+import { View, Alert, FlatList } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useRoute, useNavigation } from "@react-navigation/native";
+import { ActivityIndicator, Card, Text, Button, IconButton } from "react-native-paper";
 
 const PostAchievement = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const { group } = route.params || {}; 
+  const { group } = route.params || {};
 
   const [achievements, setAchievements] = useState([]);
   const [token, setToken] = useState("");
@@ -42,7 +43,7 @@ const PostAchievement = () => {
   const fetchAchievements = async (token) => {
     try {
       console.log("🔄 Fetching achievements...");
-      const response = await axios.get("https://fitfolk-33796.el.r.appspot.com/api/get-achievements", {
+      const response = await axios.get("https://flask-s8i3.onrender.com/api/get-achievements", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -61,7 +62,7 @@ const PostAchievement = () => {
       console.log("📌 Posting to group:", group, achievement);
 
       const response = await axios.post(
-        "https://fitfolk-33796.el.r.appspot.com/api/group-post",
+        "https://flask-s8i3.onrender.com/api/group-post",
         { group_name: group, content: `🏆 ${achievement.title} - ${achievement.description}` },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -76,25 +77,45 @@ const PostAchievement = () => {
   };
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 10 }}>
-        🏅 Post to {group}
+    <View style={{ flex: 1, padding: 20, backgroundColor: "#F7F9FC" }}>
+      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 15, textAlign: "center" }}>
+        🏅 Share Achievements in {group}
       </Text>
 
       {loading ? (
-        <ActivityIndicator size="large" color="blue" />
+        <ActivityIndicator size="large" color="#6200ea" style={{ marginTop: 20 }} />
       ) : achievements.length === 0 ? (
-        <Text>No achievements yet. Earn one by completing workouts or logging sleep!</Text>
+        <Text style={{ textAlign: "center", fontSize: 16, color: "#666" }}>
+          No achievements yet. Complete workouts or log sleep to earn achievements!
+        </Text>
       ) : (
         <FlatList
           data={achievements}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
-            <View style={{ borderWidth: 1, padding: 10, marginTop: 10, borderRadius: 10 }}>
-              <Text style={{ fontWeight: "bold", fontSize: 16 }}>{item.title}</Text>
-              <Text style={{ marginBottom: 5 }}>{item.description}</Text>
-              <Button title="📢 Post to Group" onPress={() => postAchievementToGroup(item)} />
-            </View>
+            <Card
+              style={{
+                marginBottom: 15,
+                borderRadius: 12,
+                backgroundColor: "#ffffff",
+                elevation: 3,
+              }}
+            >
+              <Card.Content>
+                <Text style={{ fontWeight: "bold", fontSize: 18, color: "#333" }}>{item.title}</Text>
+                <Text style={{ fontSize: 14, color: "#666", marginVertical: 5 }}>{item.description}</Text>
+              </Card.Content>
+              <Card.Actions>
+                <Button
+                  icon="send"
+                  mode="contained"
+                  onPress={() => postAchievementToGroup(item)}
+                  style={{ flex: 1, backgroundColor: "#6200ea", borderRadius: 8 }}
+                >
+                  Post
+                </Button>
+              </Card.Actions>
+            </Card>
           )}
         />
       )}
