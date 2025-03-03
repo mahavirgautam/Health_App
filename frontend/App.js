@@ -1,7 +1,8 @@
-import React,{useEffect} from "react";
-import {AppState} from "react-native";
+import React, { useEffect } from "react";
+import { AppState } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import AppNavigator from "./AppNavigator";
+import AppNavigator from "./AppNavigator"; // Ensure this file correctly sets up the navigator
+import { NavigationContainer } from "@react-navigation/native"; // Ensure NavigationContainer is wrapped
 
 export default function App() {
   useEffect(() => {
@@ -11,12 +12,16 @@ export default function App() {
       }
     };
 
-    AppState.addEventListener("change",handleAppStateChange);
+    const subscription = AppState.addEventListener("change", handleAppStateChange);
 
     return () => {
-      AppState.removeEventListener("change",handleAppStateChange);
+      subscription.remove(); // Fix: Properly remove the event listener
     };
   }, []);
 
-  return <AppNavigator/>;
+  return (
+    <NavigationContainer>
+      <AppNavigator />
+    </NavigationContainer>
+  );
 }
