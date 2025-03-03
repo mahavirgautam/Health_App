@@ -19,7 +19,7 @@ const JoinGroup = () => {
 
   const fetchGroups = async () => {
     try {
-      const response = await axios.get("https://fitfolk-33796.el.r.appspot.com/api/get-groups");
+      const response = await axios.get("https://flask-s8i3.onrender.com/api/get-groups");
       setGroups(response.data);
     } catch (error) {
       console.error("Error fetching groups:", error);
@@ -36,7 +36,7 @@ const JoinGroup = () => {
       }
 
       const response = await axios.get(
-        "https://fitfolk-33796.el.r.appspot.com/api/get-user-groups",
+        "https://flask-s8i3.onrender.com/api/get-user-groups",
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -58,7 +58,7 @@ const JoinGroup = () => {
       }
 
       const response = await axios.post(
-        "https://fitfolk-33796.el.r.appspot.com/api/join-group",
+        "https://flask-s8i3.onrender.com/api/join-group",
         { group_name: groupName },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -73,10 +73,10 @@ const JoinGroup = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>📢 Join a Group</Text>
+      <Text style={styles.title}>🌟 Join a Group 🌟</Text>
 
       {loading ? (
-        <ActivityIndicator size="large" color="blue" />
+        <ActivityIndicator size="large" color="#FF5722" />
       ) : (
         <FlatList
           data={groups}
@@ -85,11 +85,15 @@ const JoinGroup = () => {
           renderItem={({ item }) => (
             <View style={styles.groupContainer}>
               <Text style={styles.groupName}>{item.name}</Text>
-              <Button
-                title={userGroups.includes(item.name) ? "Joined ✅" : "Join"}
+              <TouchableOpacity
+                style={userGroups.includes(item.name) ? styles.joinedButton : styles.joinButton}
                 onPress={() => joinGroup(item.name)}
                 disabled={userGroups.includes(item.name)}
-              />
+              >
+                <Text style={styles.buttonText}>
+                  {userGroups.includes(item.name) ? "Joined ✅" : "Join"}
+                </Text>
+              </TouchableOpacity>
               {userGroups.includes(item.name) && (
                 <TouchableOpacity 
                   style={styles.postButton} 
@@ -107,12 +111,60 @@ const JoinGroup = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 10, textAlign: "center" },
-  groupContainer: { padding: 15, borderWidth: 1, marginBottom: 10, borderRadius: 8 },
-  groupName: { fontSize: 18, fontWeight: "bold" },
-  postButton: { marginTop: 10, backgroundColor: "#4CAF50", padding: 8, borderRadius: 5 },
-  postButtonText: { color: "white", textAlign: "center", fontWeight: "bold" },
+  container: { 
+    flex: 1, 
+    padding: 20, 
+    backgroundColor: "#E3F2FD" // Light blue background
+  },
+  title: { 
+    fontSize: 26, 
+    fontWeight: "bold", 
+    color: "#1A237E", // Deep Blue
+    textAlign: "center", 
+    marginBottom: 15 
+  },
+  groupContainer: { 
+    padding: 15, 
+    backgroundColor: "#FFEBEE", // Light pinkish background
+    borderRadius: 12, 
+    marginBottom: 10, 
+    borderWidth: 1, 
+    borderColor: "#D1D1E0",
+    elevation: 5, // Shadow for depth
+  },
+  groupName: { 
+    fontSize: 20, 
+    fontWeight: "bold", 
+    color: "#880E4F" // Dark Pink
+  },
+  joinButton: {
+    backgroundColor: "#2196F3", // Bright blue
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  joinedButton: {
+    backgroundColor: "#4CAF50", // Green for joined
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  postButton: {
+    backgroundColor: "#9C27B0", // Deep purple
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 10,
+  },
+  postButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
 });
 
 export default JoinGroup;
