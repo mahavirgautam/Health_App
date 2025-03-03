@@ -1,108 +1,149 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, ActivityIndicator, Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  View,
+  Text,
+  FlatList,
+  Alert,
+  ActivityIndicator,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+} from "react-native";
+import { Button, Card, Title, Paragraph } from "react-native-paper";
+import MultiSelect from "react-native-multiple-select";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const MealSummary = () => {
-  const [meals, setMeals] = useState([]);
+const MealTracker = ({ navigation }) => {
+  const [foodItems, setFoodItems] = useState([]);
+  const [meals, setMeals] = useState({ breakfast: [], lunch: [], snacks: [], dinner: [] });
   const [loading, setLoading] = useState(true);
-  const [totalNutrition, setTotalNutrition] = useState({
-    calories: 0,
-    protein: 0,
-    carbs: 0,
-    fats: 0,
-  });
 
   useEffect(() => {
-    fetchLoggedMeals();
+    const fetchFoodItems = async () => {
+      try {
+        const response = await axios.get("https://flask-s8i3.onrender.com/api/get-food-items");
+        if (response.data.food_items.length === 0) {
+          Alert.alert("⚠️ Warning", "No food items found in the database.");
+        }
+        setFoodItems(response.data.food_items.map((food, index) => ({ id: index.toString(), name: food })));
+      } catch (error) {
+        console.error("Error fetching food items:", error);
+        Alert.alert("⚠️ Error", "Failed to load food items.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFoodItems();
   }, []);
 
-  const fetchLoggedMeals = async () => {
+  const updateMeal = (mealType, selectedItems) => {
+    setMeals((prevMeals) => ({
+      ...prevMeals,
+      [mealType]: selectedItems.map((id) => foodItems.find((item) => item.id === id)?.name || ""),
+    }));
+  };
+
+  const logMeal = async () => {
     try {
       const token = await AsyncStorage.getItem("authToken");
       if (!token) {
-        Alert.alert("Login Required", "Please log in first.");
+        Alert.alert("⚠️ Error", "You must be logged in to log meals.");
         return;
       }
 
-      const response = await axios.get("https://fitfolk-33796.el.r.appspot.com/api/get-logged-meals", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        "https://flask-s8i3.onrender.com/api/log-meal",
+        { meals },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      if (response.data.meals.length === 0) {
-        Alert.alert("No Meals", "You haven't logged any meals yet.");
-      }
-
-      setMeals(response.data.meals);
-      calculateTotalNutrition(response.data.meals); 
+      Alert.alert("✅ Success", "Meal logged successfully!");
+      navigation.navigate("MealSummary");
     } catch (error) {
-      console.error("Error fetching meals:", error);
-      Alert.alert("Error", "Failed to load meals.");
-    } finally {
-      setLoading(false);
+      console.error("Error logging meal:", error);
+      Alert.alert("⚠️ Error", "Failed to log meal.");
     }
   };
-
-  const calculateTotalNutrition = (meals) => {
-    let totals = { calories: 0, protein: 0, carbs: 0, fats: 0 };
-
-    meals.forEach((meal) => {
-      totals.calories += meal.nutrition?.calories || 0;
-      totals.protein += meal.nutrition?.protein || 0;
-      totals.carbs += meal.nutrition?.carbs || 0;
-      totals.fats += meal.nutrition?.fats || 0;
-    });
-
-    setTotalNutrition(totals);
-  };
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A"; 
-    if (typeof dateString === "string") {
-      return dateString; 
-    }
-    const date = new Date(dateString);
-    return isNaN(date) ? "Invalid Date" : date.toISOString().split("T")[0];
-  };
-  
 
   return (
-    <View style={{ flex: 1, padding: 20 }}>
-      <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 10 }}>🍽 Meal Summary</Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <Title style={styles.header}>🍽 Meal Tracker</Title>
+      {loading && <ActivityIndicator size="large" color="#4CAF50" />}
 
-      {loading ? (
-        <ActivityIndicator size="large" color="blue" />
-      ) : (
-        <>
-          <View style={{ marginBottom: 20, padding: 10, backgroundColor: "#eee", borderRadius: 10 }}>
-            <Text style={{ fontSize: 18, fontWeight: "bold" }}>🔥 Total Nutrition</Text>
-            <Text>🔥 Calories: {totalNutrition.calories} kcal</Text>
-            <Text>💪 Protein: {totalNutrition.protein} g</Text>
-            <Text>🥖 Carbs: {totalNutrition.carbs} g</Text>
-            <Text>🧈 Fats: {totalNutrition.fats} g</Text>
-          </View>
+      <FlatList
+        data={Object.keys(meals)}
+        keyExtractor={(item) => item}
+        renderItem={({ item: mealType }) => (
+          <Card style={styles.mealContainer}>
+            <Card.Content>
+              <Title style={styles.mealTitle}>{mealType.charAt(0).toUpperCase() + mealType.slice(1)}</Title>
+              <MultiSelect
+                items={foodItems}
+                uniqueKey="id"
+                onSelectedItemsChange={(selectedItems) => updateMeal(mealType, selectedItems)}
+                selectedItems={meals[mealType].map((food) => foodItems.find((item) => item.name === food)?.id || "")}
+                selectText="Select food items"
+                searchInputPlaceholderText="Search food..."
+                tagRemoveIconColor="red"
+                tagBorderColor="#CCC"
+                tagTextColor="#000"
+                selectedItemTextColor="#4CAF50"
+                selectedItemIconColor="#4CAF50"
+                itemTextColor="#333"
+                displayKey="name"
+                submitButtonText="Confirm"
+                nestedScrollEnabled={true}
+                styleDropdownMenu={styles.dropdownMenu}
+              />
+            </Card.Content>
+          </Card>
+        )}
+        contentContainerStyle={styles.listContainer}
+      />
 
-          <FlatList
-            data={meals}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View style={{ padding: 10, borderWidth: 1, marginBottom: 10, borderRadius: 10 }}>
-                <Text style={{ fontWeight: "bold" }}>📅 Date: {formatDate(item.date)}</Text>
-                <Text>🍳 Breakfast: {item.meals?.breakfast || "Not logged"}</Text>
-                <Text>🥗 Lunch: {item.meals?.lunch || "Not logged"}</Text>
-                <Text>🍪 Snacks: {item.meals?.snacks || "Not logged"}</Text>
-                <Text>🍽 Dinner: {item.meals?.dinner || "Not logged"}</Text>
-                <Text>🔥 Calories: {item.nutrition?.calories || 0} kcal</Text>
-                <Text>💪 Protein: {item.nutrition?.protein || 0} g</Text>
-                <Text>🥖 Carbs: {item.nutrition?.carbs || 0} g</Text>
-                <Text>🧈 Fats: {item.nutrition?.fats || 0} g</Text>
-              </View>
-            )}
-          />
-        </>
-      )}
-    </View>
+      <Button mode="contained" onPress={logMeal} style={styles.button}>
+        Log Meal
+      </Button>
+    </KeyboardAvoidingView>
   );
 };
 
-export default MealSummary;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#F5F5F5",
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  mealContainer: {
+    marginBottom: 15,
+    borderRadius: 10,
+    elevation: 3,
+  },
+  mealTitle: {
+    fontSize: 18,
+    marginBottom: 5,
+    fontWeight: "bold",
+    color: "#4CAF50",
+  },
+  listContainer: {
+    paddingBottom: 20,
+  },
+  button: {
+    marginTop: 10,
+    backgroundColor: "#4CAF50",
+  },
+});
+
+export default MealTracker;
